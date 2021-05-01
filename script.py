@@ -37,7 +37,7 @@ import random
 class FileProvider:
 
     @staticmethod
-    def exists_path(path) -> bool:
+    def is_exists_path(path) -> bool:
         return os.path.exists(path)
 
     @staticmethod
@@ -73,46 +73,37 @@ class File:
 class HashSumChecker:
 
     def __init__(self, file, hash_algo):
+        # if hash_algo == 'md5':
+        #     self.hash_sum = hashlib.md5(file).hexdigest()
+        # if hash_algo == 'sha1':
+        #     self.hash_sum = hashlib.sha1(file).hexdigest()
+        # if hash_algo == 'sha256':
+        #     self.hash_sum = hashlib.sha256(file).hexdigest()
 
-        if hash_algo == 'md5':
-            self.hash_sum = hashlib.md5(file).hexdigest()
-        if hash_algo == 'sha1':
-            self.hash_sum = hashlib.sha1(file).hexdigest()
-        if hash_algo == 'sha256':
-            self.hash_sum = hashlib.sha256(file).hexdigest()
+        hash_algorithm = {
+            'md5': hashlib.md5(file).hexdigest(),
+            'sha1': hashlib.sha1(file).hexdigest(),
+            'sha256': hashlib.sha256(file).hexdigest(),
+
+        }
+        self.hash_sum = hash_algorithm[hash_algo]
 
     def equal_hash_sum(self, input_hash_sum) -> bool:
         return self.hash_sum == input_hash_sum
 
 
-# class FilesFinder:
-#     """
-#     Class for ...
-#     """
-#
-#     def __init__(self, path):
-#         if not os.path.exists(path):
-#             raise FileNotFoundError(f'No such file or directory: {path}')
-#         self.path = path
-#
-#     def get_file(self):
-#         for file in os.listdir(self.path):
-#             if os.path.isfile(os.path.join(self.path, file)):
-#                 return file
-
-
 def main():
     input_file = 'input_file.txt'
     dir_to_check = 'files_to_check'
-    if not FileProvider.exists_path(input_file):
-        raise FileExistsError
+    if not FileProvider.is_exists_path(input_file):
+        raise FileNotFoundError
 
-    if not FileProvider.exists_path(dir_to_check):
-        raise FileExistsError
+    if not FileProvider.is_exists_path(dir_to_check):
+        raise FileNotFoundError
 
     for file in FileProvider.parser_input_file(input_file):
         file_path = FileProvider.get_file_path(dir_to_check, file.name)
-        if not FileProvider.exists_path(file_path):
+        if not FileProvider.is_exists_path(file_path):
             print(file.name, 'NOT FOUND')
             continue
 
