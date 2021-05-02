@@ -2,36 +2,6 @@ import hashlib
 import re
 import os
 import argparse
-import random
-
-
-# md5 = hashlib.md5().name
-# sha1 = hashlib.sha1().name
-# sha256 = hashlib.sha256().name
-
-# hash_algorithms = (md5, sha1, sha256)
-
-
-# path_to_files = os.path.join(os.getcwd(), 'files_to_check')
-# print(path_to_files_dir)
-
-# dir_ = os.listdir(path_to_files)
-# print(dir_)
-
-# files = [file for file in os.listdir(path_to_files) if os.path.isfile(os.path.join(path_to_files, file))]
-
-
-# print(files)
-
-# print(os.path.abspath(file1))
-
-
-# for file in files:
-#     with open(path_to_files + '/' + file, 'rb') as bf:
-#         binary_file = bf.read()
-#         hash_sum = hashlib.sha256(binary_file).hexdigest()
-#         with open('input_file.txt', 'a') as input_file:
-#             input_file.write(file + ' ' + random.choice(hash_algorithms) + ' ' + hash_sum + '\n')
 
 
 class FileProvider:
@@ -73,33 +43,48 @@ class File:
 class HashSumChecker:
 
     def __init__(self, file, hash_algo):
-        # if hash_algo == 'md5':
-        #     self.hash_sum = hashlib.md5(file).hexdigest()
-        # if hash_algo == 'sha1':
-        #     self.hash_sum = hashlib.sha1(file).hexdigest()
-        # if hash_algo == 'sha256':
-        #     self.hash_sum = hashlib.sha256(file).hexdigest()
-
         hash_algorithm = {
             'md5': hashlib.md5(file).hexdigest(),
             'sha1': hashlib.sha1(file).hexdigest(),
             'sha256': hashlib.sha256(file).hexdigest(),
-
         }
         self.hash_sum = hash_algorithm[hash_algo]
 
     def equal_hash_sum(self, input_hash_sum) -> bool:
+        """
+        Compares the hash sums of the files
+        :param input_hash_sum: Hash sum of file from input file
+        :return:
+        """
         return self.hash_sum == input_hash_sum
 
 
+class ArgsParser:
+
+    @classmethod
+    def create_parser(cls):
+        parser = argparse.ArgumentParser()
+        parser.add_argument('path_file',
+                            help='provide path to the input file',
+                            type=str)
+        parser.add_argument('path_dir',
+                            help='provide path to the directory containing the files to check',
+                            type=str)
+        return parser
+
+
 def main():
-    input_file = 'input_file.txt'
-    dir_to_check = 'files_to_check'
+    parser = ArgsParser.create_parser()
+    args = parser.parse_args()
+
+    input_file = args.path_file
+    dir_to_check = args.path_dir
+
     if not FileProvider.is_exists_path(input_file):
-        raise FileNotFoundError
+        raise FileNotFoundError('No such file or directory')
 
     if not FileProvider.is_exists_path(dir_to_check):
-        raise FileNotFoundError
+        raise FileNotFoundError('No such file or directory')
 
     for file in FileProvider.parser_input_file(input_file):
         file_path = FileProvider.get_file_path(dir_to_check, file.name)
